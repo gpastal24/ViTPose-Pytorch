@@ -125,7 +125,7 @@ def pose_points_yolo5(detector,image,pose,tracker,args):
                             pad = (int(x1),int(2*abs(x2_new-x2-x1)))
                             x1_new=0
                         elif x2_new-x2>image.shape[0]:
-                            pad = (int(2*abs(x1_new-x1)-2*(img.shape[1]-1-x2)),0)
+                            pad = (int(2*abs(x1_new-x1)-2*(img.shape[1]-1-x2)),int(abs(img.shape[1]-1-x2)))
                             x2_new=x2
                         image_crop = np.pad(image_crop,((0, 0), (pad), (0, 0)))
                         images[i] = transform(image_crop)
