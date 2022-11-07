@@ -46,3 +46,8 @@ Select the device you want to capture video with (0 by default if no arg is pass
 python3 inference_yolov5.py --camid=<id> (--trt)
 ```
 
+Single Image inference. The output will be stored in test_out.png
+
+```
+python3 inference_yolov5.py --img=<img_path> (--trt)
+```
