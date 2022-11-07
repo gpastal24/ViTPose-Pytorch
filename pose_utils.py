@@ -102,14 +102,7 @@ def pose_points_yolo5(detector,image,pose,tracker,args):
                         image_crop = image[y1:y2, x1:x2, ::-1]
                         # print(y1,y2,x1,x2)
                         pad = (int(abs(y1_new-y1))), int(abs(y2_new-y2))
-                        if y1-y1_new<0:
-                            pad = (int(abs(y1)),int(2*abs(y2_new-y2)-2*y1))
-                            y1_new=0
-                        elif y2_new-y2>image.shape[0]:
-                            pad = (int(2*abs(y1_new-y1)-2*(image.shape[0]-1-y2)),int(abs(image.shape[0]-1-y2)))
-                            y2_new=image.shape[0]-1
                         image_crop = np.pad(image_crop,((pad), (0, 0), (0, 0)))
-
                         images[i] = transform(image_crop)
                         boxes[i]= torch.tensor([x1, y1_new, x2, y2_new])
                     
@@ -122,13 +115,6 @@ def pose_points_yolo5(detector,image,pose,tracker,args):
                         # images[i] = transform(image[y1:y2, x1:x2, ::-1])
                         image_crop = image[y1:y2, x1:x2, ::-1]
                         pad = (abs(x1_new-x1)), int(abs(x2_new-x2))
-                        # print(pad)
-                        if x1-x1_new<0:
-                            pad = (int(x1),int(2*abs(x2_new-x2-x1)))
-                            x1_new=0
-                        elif x2_new-x2>image.shape[1]-1:
-                            pad = (int(2*abs(x1_new-x1)-2*(image.shape[1]-1-x2)),int(abs(image.shape[1]-1-x2)))
-                            x2_new=image.shape[1]-1
                         image_crop = np.pad(image_crop,((0, 0), (pad), (0, 0)))
                         images[i] = transform(image_crop)
                         boxes[i]= torch.tensor([x1_new, y1, x2_new, y2])
