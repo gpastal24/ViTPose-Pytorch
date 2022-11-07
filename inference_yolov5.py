@@ -76,7 +76,7 @@ if args.trt:
     pose = TRTModule_ViTPose(path='models/vitpose-b-multi-coco.engine',device='cuda:0')
 else:
     model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
-
+    # model = torch.hub.load('WongKinYiu/yolov7', 'custom','yolov7-e6e.pt')
     pose = build_model('ViTPose_base_coco_256x192','./models/vitpose-b.pth')
 pose.cuda().eval()
 # args = make_parser
@@ -151,7 +151,6 @@ if args.img is not None:
     else:
             timer.toc()
             online_im = frame_orig
-
 
     cv2.imwrite('test_out.png',online_im)
 
