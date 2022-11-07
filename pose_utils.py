@@ -41,10 +41,12 @@ def pose_points_yolo5(detector,image,pose,tracker,args):
             # print(detections)
             # print(detections.shape)
             dets = detections.xyxy[0]
+            
             dets = dets[dets[:,5] == 0.]
+            
             # dets = dets[dets[:,4] > 0.3]
             # logger.warning(len(dets))
-
+            
             if len(dets)>0:
                 # image_gpu = torch.tensor(image).cuda()/255.
                 # print(image_gpu.size())
