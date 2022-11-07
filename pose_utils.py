@@ -47,80 +47,80 @@ def pose_points_yolo5(detector,image,pose,tracker,args):
             # dets = dets[dets[:,4] > 0.3]
             # logger.warning(len(dets))
             
-            if len(dets)>0:
+            # if len(dets)>0:
                 # image_gpu = torch.tensor(image).cuda()/255.
                 # print(image_gpu.size())
-                timer_track.tic()
-                online_targets=tracker.update(dets,[image.shape[0],image.shape[1]],image.shape)
+            timer_track.tic()
+            online_targets=tracker.update(dets,[image.shape[0],image.shape[1]],image.shape)
 
-                online_tlwhs = []
-                online_ids = []
-                online_scores = []
-                for t in online_targets:
-                    tlwh = t.tlwh
-                    tid = t.track_id
-                    # vertical = tlwh[2] / tlwh[3] > args.aspect_ratio_threshs
-                    if tlwh[2] * tlwh[3] > args.min_box_area :#and not vertical:
-                        online_tlwhs.append(tlwh)
-                        online_ids.append(tid)
-                        online_scores.append(t.score)
-                # tracker.update()
-                timer_track.toc()
-                logger.info('TRACKING FPS --%s',1./timer_track.average_time)
-                device='cuda'
-                nof_people = len(dets) if dets is not None else 0
-                # print(dets)
-                # print(nof_people)
-                boxes = torch.empty((nof_people, 4), dtype=torch.int32,device= 'cuda')
-                # boxes = []
-                images = torch.empty((nof_people, 3, 256, 192))  # (height, width)
-                heatmaps = np.zeros((nof_people, 17, 64, 48),
-                                    dtype=np.float32)
-                # starter.record()
-                # print(online_tlwhs)
-                if online_tlwhs:
-                    for i, (x1, y1, x2, y2) in enumerate(online_tlwhs):
-                    # if i<1:
-                        x1 = x1.astype(np.int32)
-                        x2 = x1+x2.astype(np.int32)
-                        y1 = y1.astype(np.int32)
-                        y2 = y1+ y2.astype(np.int32)
-                        if x2>image.shape[1]:x2=image.shape[1]
-                        if y2>image.shape[0]:y2=image.shape[0]
-                        if y1<0: y1=0
-                        if x1<0 : x1=0
-                        # print([x1,x2,y1,y2])
-                        # image = cv2.rectangle(image, (x1,y1), (x2,y2), (0,0,0), 1)
-                # cv2.imwrite('saved.png',image)
-                #         # Adapt detections to match HRNet input aspect ratio (as suggested by xtyDoge in issue #14)
-                        correction_factor = 256 / 192 * (x2 - x1) / (y2 - y1)
-                        if correction_factor > 1:
-                            # increase y side
-                            center = y1 + (y2 - y1) // 2
-                            length = int(round((y2 - y1) * correction_factor))
-                            y1_new = max(0, center - length // 2)
-                            y2_new = min(image.shape[0], center + length // 2)
-                            image_crop = image[y1:y2, x1:x2, ::-1]
-                            # print(y1,y2,x1,x2)
-                            pad = (abs(y2_new-y2)), int(abs(y1_new-y1))
-                            # print(pad)
-                            image_crop = np.pad(image_crop,((int(abs(y1_new-y1)), int(abs(y2_new-y2))), (0, 0), (0, 0)))
-                            images[i] = transform(image_crop)
-                            boxes[i]= torch.tensor([x1, y1_new, x2, y2_new])
-                        
-                        elif correction_factor < 1:
-                            # increase x side
-                            center = x1 + (x2 - x1) // 2
-                            length = int(round((x2 - x1) * 1 / correction_factor))
-                            x1_new = max(0, center - length // 2)
-                            x2_new = min(image.shape[1], center + length // 2)
-                            # images[i] = transform(image[y1:y2, x1:x2, ::-1])
-                            image_crop = image[y1:y2, x1:x2, ::-1]
-                            pad = (abs(x1_new-x1)), int(abs(x2_new-x2))
-                            # print(pad)
-                            image_crop = np.pad(image_crop,((0, 0), (int(abs(x1_new-x1)), int(abs(x2_new-x2))), (0, 0)))
-                            images[i] = transform(image_crop)
-                            boxes[i]= torch.tensor([x1_new, y1, x2_new, y2])
+            online_tlwhs = []
+            online_ids = []
+            online_scores = []
+            for t in online_targets:
+                tlwh = t.tlwh
+                tid = t.track_id
+                # vertical = tlwh[2] / tlwh[3] > args.aspect_ratio_threshs
+                if tlwh[2] * tlwh[3] > args.min_box_area :#and not vertical:
+                    online_tlwhs.append(tlwh)
+                    online_ids.append(tid)
+                    online_scores.append(t.score)
+            # tracker.update()
+            timer_track.toc()
+            logger.info('TRACKING FPS --%s',1./timer_track.average_time)
+            device='cuda'
+            nof_people = len(online_ids) if online_ids is not None else 0
+            # print(dets)
+            # print(nof_people)
+            boxes = torch.empty((nof_people, 4), dtype=torch.int32,device= 'cuda')
+            # boxes = []
+            images = torch.empty((nof_people, 3, 256, 192))  # (height, width)
+            heatmaps = np.zeros((nof_people, 17, 64, 48),
+                                dtype=np.float32)
+            # starter.record()
+            # print(online_tlwhs)
+            if len(online_tlwhs):
+                for i, (x1, y1, x2, y2) in enumerate(online_tlwhs):
+                # if i<1:
+                    x1 = x1.astype(np.int32)
+                    x2 = x1+x2.astype(np.int32)
+                    y1 = y1.astype(np.int32)
+                    y2 = y1+ y2.astype(np.int32)
+                    if x2>image.shape[1]:x2=image.shape[1]
+                    if y2>image.shape[0]:y2=image.shape[0]
+                    if y1<0: y1=0
+                    if x1<0 : x1=0
+                    # print([x1,x2,y1,y2])
+                    # image = cv2.rectangle(image, (x1,y1), (x2,y2), (0,0,0), 1)
+            # cv2.imwrite('saved.png',image)
+            #         # Adapt detections to match HRNet input aspect ratio (as suggested by xtyDoge in issue #14)
+                    correction_factor = 256 / 192 * (x2 - x1) / (y2 - y1)
+                    if correction_factor > 1:
+                        # increase y side
+                        center = y1 + (y2 - y1) // 2
+                        length = int(round((y2 - y1) * correction_factor))
+                        y1_new = max(0, center - length // 2)
+                        y2_new = min(image.shape[0], center + length // 2)
+                        image_crop = image[y1:y2, x1:x2, ::-1]
+                        # print(y1,y2,x1,x2)
+                        pad = (abs(y2_new-y2)), int(abs(y1_new-y1))
+                        # print(pad)
+                        image_crop = np.pad(image_crop,((int(abs(y1_new-y1)), int(abs(y2_new-y2))), (0, 0), (0, 0)))
+                        images[i] = transform(image_crop)
+                        boxes[i]= torch.tensor([x1, y1_new, x2, y2_new])
+                    
+                    elif correction_factor < 1:
+                        # increase x side
+                        center = x1 + (x2 - x1) // 2
+                        length = int(round((x2 - x1) * 1 / correction_factor))
+                        x1_new = max(0, center - length // 2)
+                        x2_new = min(image.shape[1], center + length // 2)
+                        # images[i] = transform(image[y1:y2, x1:x2, ::-1])
+                        image_crop = image[y1:y2, x1:x2, ::-1]
+                        pad = (abs(x1_new-x1)), int(abs(x2_new-x2))
+                        # print(pad)
+                        image_crop = np.pad(image_crop,((0, 0), (int(abs(x1_new-x1)), int(abs(x2_new-x2))), (0, 0)))
+                        images[i] = transform(image_crop)
+                        boxes[i]= torch.tensor([x1_new, y1, x2_new, y2])
                         
                         # if correction_factor > 1:
 
