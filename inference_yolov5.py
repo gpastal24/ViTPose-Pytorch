@@ -75,7 +75,7 @@ if args.trt:
     
     pose = TRTModule_ViTPose(path='models/vitpose-b-multi-coco.engine',device='cuda:0')
 else:
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5x', pretrained=True)
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
 
     pose = build_model('ViTPose_base_coco_256x192','./models/vitpose-b.pth')
 pose.cuda().eval()
