@@ -66,6 +66,7 @@ def pose_points_yolo5(detector,image,pose,tracker,args):
             logger.info('TRACKING FPS --%s',1./timer_track.average_time)
             device='cuda'
             nof_people = len(online_ids) if online_ids is not None else 0
+            # nof_people=1
             # print(dets)
             # print(nof_people)
             boxes = torch.empty((nof_people, 4), dtype=torch.int32,device= 'cuda')
@@ -77,6 +78,7 @@ def pose_points_yolo5(detector,image,pose,tracker,args):
             # print(online_tlwhs)
             if len(online_tlwhs):
                 for i, (x1, y1, x2, y2) in enumerate(online_tlwhs):
+                # for i, (x1, y1, x2, y2) in enumerate(np.array([[55,399,424-55,479-399]])):
                 # if i<1:
                     x1 = x1.astype(np.int32)
                     x2 = x1+x2.astype(np.int32)
@@ -100,12 +102,12 @@ def pose_points_yolo5(detector,image,pose,tracker,args):
                         image_crop = image[y1:y2, x1:x2, ::-1]
                         # print(y1,y2,x1,x2)
                         pad = (int(abs(y1_new-y1))), int(abs(y2_new-y2))
-                        if y1_new<0:
+                        if y1-y1_new<0:
                             pad = (int(abs(y1)),int(2*abs(y2_new-y2)-2*y1))
                             y1_new=0
-                        elif y2_new>image.shape[0]:
-                            pad = (int(2*abs(y1_new-y1)-2*(img.shape[0]-1-y2)),int(abs(img.shape[0]-1-y2)))
-                            y2_new=img.shape[0]-1
+                        elif y2_new-y2>image.shape[0]:
+                            pad = (int(2*abs(y1_new-y1)-2*(image.shape[0]-1-y2)),int(abs(image.shape[0]-1-y2)))
+                            y2_new=image.shape[0]-1
                         image_crop = np.pad(image_crop,((pad), (0, 0), (0, 0)))
 
                         images[i] = transform(image_crop)
@@ -121,11 +123,11 @@ def pose_points_yolo5(detector,image,pose,tracker,args):
                         image_crop = image[y1:y2, x1:x2, ::-1]
                         pad = (abs(x1_new-x1)), int(abs(x2_new-x2))
                         # print(pad)
-                        if x1_new<0:
+                        if x1-x1_new<0:
                             pad = (int(x1),int(2*abs(x2_new-x2-x1)))
                             x1_new=0
-                        elif x2_new>image.shape[1]-1:
-                            pad = (int(2*abs(x1_new-x1)-2*(img.shape[1]-1-x2)),int(abs(img.shape[1]-1-x2)))
+                        elif x2_new-x2>image.shape[1]-1:
+                            pad = (int(2*abs(x1_new-x1)-2*(image.shape[1]-1-x2)),int(abs(image.shape[1]-1-x2)))
                             x2_new=image.shape[1]-1
                         image_crop = np.pad(image_crop,((0, 0), (pad), (0, 0)))
                         images[i] = transform(image_crop)

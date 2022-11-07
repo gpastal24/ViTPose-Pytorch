@@ -46,9 +46,9 @@ def make_parser():
 
     parser.add_argument('--trt',action='store_true')
     # tracking args
-    parser.add_argument("--track_thresh", type=float, default=0.4, help="tracking confidence threshold")
-    parser.add_argument("--track_buffer", type=int, default=240, help="the frames for keep lost tracks")
-    parser.add_argument("--match_thresh", type=float, default=0.6, help="matching threshold for tracking")
+    parser.add_argument("--track_thresh", type=float, default=0.5, help="tracking confidence threshold")
+    parser.add_argument("--track_buffer", type=int, default=30, help="the frames for keep lost tracks")
+    parser.add_argument("--match_thresh", type=float, default=0.8, help="matching threshold for tracking")
     parser.add_argument(
         "--aspect_ratio_thresh", type=float, default=1.6,
         help="threshold for filtering out boxes of which aspect ratio are above the given value."
@@ -143,6 +143,7 @@ if args.img is not None:
                 frame_orig, online_tlwhs, online_ids, frame_id=frame_id, fps=1/timer.average_time
             )
             # person_ids = np.arange(len(pts), dtype=np.int32)
+            # print(pts)
             if pts is not None:
                 for i, (pt, pid) in enumerate(zip(pts, online_ids)):
                     online_im=draw_points_and_skeleton(online_im, pt, joints_dict()['coco']['skeleton'], person_index=pid,
