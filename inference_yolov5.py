@@ -23,7 +23,7 @@ logger = logging.getLogger("Tracker !")
 logger.setLevel(logging.INFO)
 
 ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
+ch.setLevel(logging.WARNING)
 
 ch.setFormatter(CustomFormatter())
 
@@ -37,6 +37,7 @@ def make_parser():
     parser.add_argument(
         "--path", help="path to video"
     )
+    parser.add_argument("--path_out",default=None,help="save video")
     parser.add_argument(
         "--img", help="path to img",default=None
     )
@@ -45,6 +46,7 @@ def make_parser():
     # exp file
 
     parser.add_argument('--trt',action='store_true')
+    parser.add_argument('--trt_pose_only',action='store_true')
     # tracking args
     parser.add_argument("--track_thresh", type=float, default=0.5, help="tracking confidence threshold")
     parser.add_argument("--track_buffer", type=int, default=30, help="the frames for keep lost tracks")
@@ -74,6 +76,12 @@ if args.trt:
     from ViTPose_trt import TRTModule_ViTPose
     
     pose = TRTModule_ViTPose(path='models/vitpose-b-multi-coco.engine',device='cuda:0')
+elif args.trt_pose_only:
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
+
+    from ViTPose_trt import TRTModule_ViTPose
+    
+    pose = TRTModule_ViTPose(path='models/vitpose-b-multi-coco.engine',device='cuda:0')
 else:
     model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
     # model = torch.hub.load('WongKinYiu/yolov7', 'custom','yolov7-e6e.pt')
@@ -85,7 +93,10 @@ if args.path is not None:
     vid = cv2.VideoCapture(args.path)
 else:
     vid = cv2.VideoCapture(args.camid)
-
+if args.path_out is not None:
+    w, h = (640,360)
+    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+    writer = cv2.VideoWriter(args.path_out, fourcc, 30, (w, h))
 frame_id = 0
 timer = Timer()
 timer_track = Timer()
@@ -94,8 +105,9 @@ timer_det = Timer()
 while(args.img is None):
     timer.tic()
     ret, frame = vid.read()
+    
     if ret:
-
+        frame = cv2.resize(frame,(640,360))
         frame_orig = frame.copy()
         # timer_det.tic()
         pts,online_tlwhs,online_ids,online_scores = pose_points_yolo5(model, frame, pose, tracker,args)
@@ -125,7 +137,8 @@ while(args.img is None):
 
         cv2.imshow('frame',online_im)
         frame_id+=1
-
+        if args.path_out is not None:
+            writer.write(online_im)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     else:
@@ -154,8 +167,8 @@ if args.img is not None:
             online_im = frame_orig
 
     cv2.imwrite('test_out.png',online_im)
-
-
+if args.path_out is not None:
+    writer.release()
 vid.release()
 cv2.destroyAllWindows()
 

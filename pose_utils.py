@@ -139,7 +139,7 @@ def pose_points_yolo5(detector,image,pose,tracker,args):
                         # boxes=boxes.to('cuda:1')
                         # out = torch.empty((images.shape[0],17,64,48),device=device)
                         # print(images.size())
-                        if args.trt:
+                        if args.trt or args.trt_pose_only:
                             out = torch.zeros((images.shape[0],17,64,48),device=device)
                             with torch.no_grad():
                                 timer_pose.tic()
