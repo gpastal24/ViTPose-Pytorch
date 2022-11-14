@@ -36,6 +36,10 @@ Run TRT infer on video
 ```
 python3 inference_yolov5.py --path=<path_to_vid> --trt
 ```
+Or if you wish only to run the trt pose model
+```
+python3 inference_yolov5.py --path=<path_to_vid> --trt_pose_only
+```
 # With a webcam or another device
 ```
 ls /dev/vid*
