@@ -36,7 +36,7 @@ Run TRT infer on video
 ```
 python3 inference_yolov5.py --path=<path_to_vid> --trt
 ```
-Or if you wish only to run the trt pose model
+Or if you wish to run only the trt pose model
 ```
 python3 inference_yolov5.py --path=<path_to_vid> --trt_pose_only
 ```
