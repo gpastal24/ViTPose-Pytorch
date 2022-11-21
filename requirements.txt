@@ -214,5 +214,4 @@ wrapt                         1.12.1
 wurlitzer                     3.0.2
 yacs                          0.1.8
 yapf                          0.31.0
-yolort                        0.6.3
 zipp                          3.8.0
