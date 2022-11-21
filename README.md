@@ -2,7 +2,7 @@
 
 ViTPose (https://github.com/ViTAE-Transformer/ViTPose) + ByteTrack (https://github.com/ifzhang/ByteTrack) + yolov5 (https://github.com/ultralytics/yolov5)
 # Preparation
-Download the official weights from ViTPose. Create a dictionary called models.
+Download the official weights from ViTPose. Create a directory called models.
 Tested with both the vitpose-b models.
 ```
 mkdir models
