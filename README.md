@@ -13,7 +13,7 @@ mv <weight_path> ~/ViTPose-Pytorch/models/
 # Requirements
 Not sure if all of them are needed
 ```
-pip3 insltall -r requirements.txt
+pip3 install -r requirements.txt
 ```
 # How to run
 ```
