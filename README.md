@@ -1,6 +1,7 @@
 # ViTPose-Pytorch no mmcv needed
 
-ViTPose (https://github.com/ViTAE-Transformer/ViTPose) + ByteTrack (https://github.com/ifzhang/ByteTrack) + yolov5 (https://github.com/ultralytics/yolov5)
+ViTPose (https://github.com/ViTAE-Transformer/ViTPose) + ByteTrack (https://github.com/ifzhang/ByteTrack) + yolov5 (https://github.com/ultralytics/yolov5).
+Pose visualization code from (https://github.com/stefanopini/simple-HRNet)
 # Preparation
 Download the official weights from ViTPose. Create a directory called models.
 Tested with both the vitpose-b models.
