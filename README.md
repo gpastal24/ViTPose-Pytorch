@@ -40,14 +40,17 @@ python3 inference_yolov5.py --path=<path_to_vid> --trt
 ```
 ls /dev/vid*
 ```
-Select the device you want to capture video with (0 by default if no arg is passed).
+3 demo examples are provided . To use this lib as a package run 
 
 ```
-python3 inference_yolov5.py --camid=<id> (--trt)
+python3 -m build
 ```
+Install the whl in the dist folder via pip.
 
-Single Image inference. The output will be stored in test_out.png
 
-```
-python3 inference_yolov5.py --img=<img_path> (--trt)
-```
+# Examples 
+
+![](https://github.com/gpastal24/ViTPose-Pytorch/blob/main/examples/output.gif)
+
+
+![](https://github.com/gpastal24/ViTPose-Pytorch/blob/main/examples/out.jpg?raw=true)
