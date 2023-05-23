@@ -1,7 +1,7 @@
 from src.vitpose_infer import VitInference
 import cv2 
 
-vid = cv2.VideoCapture('kek.mp4')
+vid = cv2.VideoCapture('test_vid.mp4')
 model = VitInference('models/vitpose-b-multi-coco.engine',\
             yolo_path='./yolov5n.engine',tensorrt=True)
 frame_counter =0
