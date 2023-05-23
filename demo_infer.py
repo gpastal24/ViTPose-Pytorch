@@ -19,5 +19,5 @@ while True:
     else:
         break
 vid.release()
-writer.release()  
+#writer.release()  
 cv2.destroyAllWindows()
