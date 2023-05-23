@@ -1,0 +1,22 @@
+[project]
+name = "vitpose_infer"
+version = "0.1.0"
+authors = [
+  { name="gpastal24", email="some.email@gmail.com" },
+]
+description = "Vitpose with yolov5 and tracking"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pypa/sampleproject"
+"Bug Tracker" = "https://github.com/pypa/sampleproject/issues"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

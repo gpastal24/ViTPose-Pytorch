@@ -72,7 +72,7 @@ from utils.dataloaders import LoadImages
 from utils.general import (LOGGER, Profile, check_dataset, check_img_size, check_requirements, check_version,
                            check_yaml, colorstr, file_size, get_default_args, print_args, url2file, yaml_save)
 from utils.torch_utils import select_device, smart_inference_mode
-# from models.higherhrnet import HigherHRNet
+# # from models.higherhrnet import HigherHRNet
 
 MACOS = platform.system() == 'Darwin'  # macOS environment
 
@@ -113,24 +113,11 @@ def try_export(inner_func):
     return outer_func
 
 
-@try_export
-def export_torchscript(model, im, file, optimize, prefix=colorstr('TorchScript:')):
-    # YOLOv5 TorchScript model export
-    LOGGER.info(f'\n{prefix} starting export with torch {torch.__version__}...')
-    f = file.with_suffix('.torchscript')
 
-    ts = torch.jit.trace(model, im, strict=False)
-    d = {"shape": im.shape, "stride": int(max(model.stride)), "names": model.names}
-    extra_files = {'config.txt': json.dumps(d)}  # torch._C.ExtraFilesMap()
-    if optimize:  # https://pytorch.org/tutorials/recipes/mobile_interpreter.html
-        optimize_for_mobile(ts)._save_for_lite_interpreter(str(f), _extra_files=extra_files)
-    else:
-        ts.save(str(f), _extra_files=extra_files)
-    return f, None
 
 
 @try_export
-def export_onnx(model, im, file, opset, dynamic, simplify, prefix=colorstr('ONNX:')):
+def export_onnx(model, im, file, opset, dynamic, simplify, prefix='ONNX:'):
     # YOLOv5 ONNX export
     check_requirements('onnx')
     import onnx
@@ -163,10 +150,10 @@ def export_onnx(model, im, file, opset, dynamic, simplify, prefix=colorstr('ONNX
     onnx.checker.check_model(model_onnx)  # check onnx model
 
     # Metadata
-    d = {'stride': int(max(model.stride)), 'names': model.names}
-    for k, v in d.items():
-        meta = model_onnx.metadata_props.add()
-        meta.key, meta.value = k, str(v)
+    # d = {'stride': int(max(model.stride)), 'names': model.names}
+    # for k, v in d.items():
+    #     meta = model_onnx.metadata_props.add()
+    #     meta.key, meta.value = k, str(v)
     onnx.save(model_onnx, f)
 
     # Simplify
@@ -494,7 +481,7 @@ def run(
         assert device.type != 'cpu' or coreml, '--half only compatible with GPU export, i.e. use --device 0'
         assert not dynamic, '--half not compatible with --dynamic, i.e. use either --half or --dynamic but not both'
     # model = attempt_load(weights, device=device, inplace=True, fuse=True)  # load FP32 model
-    from builder import build_model
+    from src.vitpose_infer.model_builder import build_model
     # model = HigherHRNet(32,17)
     # model.load_state_dict(torch.load('pose_higher_hrnet_w32_512.pth'))
     # model.cuda()
