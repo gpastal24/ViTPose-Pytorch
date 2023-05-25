@@ -50,7 +50,8 @@ Install the whl in the dist folder via pip.
 
 # Examples 
 
-![](https://github.com/gpastal24/ViTPose-Pytorch/blob/main/examples/output.gif)
-
+![](https://github.com/gpastal24/ViTPose-Pytorch/blob/main/examples/output_simple.gif)
+With TRT
+![](https://github.com/gpastal24/ViTPose-Pytorch/blob/main/examples/trt_out.gif)
 
 ![](https://github.com/gpastal24/ViTPose-Pytorch/blob/main/examples/out.jpg?raw=true)
