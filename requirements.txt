@@ -22,3 +22,4 @@ lap
 Cython
 psutil
 ultralytics
+cython-bbox
