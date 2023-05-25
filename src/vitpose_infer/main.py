@@ -64,14 +64,14 @@ class VitInference:
             assert self.yolo_path is not None
             pose_split = self.pose_path.split('.')[-1]
             assert pose_split =='engine'
-            self.model = torch.hub.load('ultralytics/yolov5', 'custom', yolo_path)
+            self.model = torch.hub.load('ultralytics/yolov5:v6.2', 'custom', yolo_path)
 
             from .pose_utils.ViTPose_trt import TRTModule_ViTPose
         
             self.pose = TRTModule_ViTPose(path=self.pose_path,device='cuda:0')
         else:
             
-            self.model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
+            self.model = torch.hub.load('ultralytics/yolov5:v6.2', 'yolov5n', pretrained=True)
             self.pose = build_model('ViTPose_base_coco_256x192',self.pose_path)
         self.pose.cuda().eval()
 
@@ -84,23 +84,25 @@ class VitInference:
             # frame = cv2.resize(frame,(640,360))
     def inference(self,img,frame_id=0):
         frame_orig = img.copy()
+        self.timer.tic()
         pts,online_tlwhs,online_ids,online_scores = pose_points_yolo5(self.model, img, self.pose, self.tracker,self.tensorrt)
 
-
+        self.timer.toc()
         if len(online_ids)>0:
             # timer_track.tic()
-            self.timer.toc()
+            # self.timer.tic()
             online_im = frame_orig.copy()
             online_im = plot_tracking(
                 frame_orig, online_tlwhs, online_ids, frame_id=frame_id, fps=1/self.timer.average_time
             )
+            # self.timer.toc()
             if pts is not None:
                 for i, (pt, pid) in enumerate(zip(pts, online_ids)):
                     online_im=draw_points_and_skeleton(online_im, pt, joints_dict()['coco']['skeleton'], person_index=pid,
                                                             points_color_palette='gist_rainbow', skeleton_color_palette='jet',points_palette_samples=10,confidence_threshold=0.3)
 
         else:
-            self.timer.toc()
+
             online_im = frame_orig
             
         return pts,online_ids,online_tlwhs,online_im,frame_orig

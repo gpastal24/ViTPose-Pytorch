@@ -7,7 +7,7 @@ Created on Wed Jun 15 15:49:22 2022
 """
 import numpy as np
 import numpy.ma as ma
-import pika
+# import pika
 import json
 from collections import OrderedDict
 from collections.abc import Iterable

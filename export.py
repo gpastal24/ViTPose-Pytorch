@@ -586,7 +586,7 @@ def parse_opt():
     parser.add_argument('--simplify', action='store_true', help='ONNX: simplify model')
     parser.add_argument('--opset', type=int, default=12, help='ONNX: opset version')
     parser.add_argument('--verbose', action='store_true', help='TensorRT: verbose log')
-    parser.add_argument('--workspace', type=int, default=1, help='TensorRT: workspace size (GB)')
+    parser.add_argument('--workspace', type=int, default=3, help='TensorRT: workspace size (GB)')
     parser.add_argument('--nms', action='store_true', help='TF: add NMS to model')
     parser.add_argument('--agnostic-nms', action='store_true', help='TF: add agnostic NMS to model')
     parser.add_argument('--topk-per-class', type=int, default=100, help='TF.js NMS: topk per class to keep')

@@ -13,11 +13,11 @@ import numpy as np
 import cv2
 import logging
 # from  simpleHRNet.models_.hrnet import HRNet
-from torch2trt import torch2trt,TRTModule
+# from torch2trt import torch2trt,TRTModule
 logger = logging.getLogger("Tracker !")
 from .timerr import Timer
 from pathlib import Path
-import gdown
+# import gdown
 timer_det = Timer()
 timer_track = Timer()
 timer_pose = Timer()
