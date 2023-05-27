@@ -24,11 +24,7 @@ python3 export.py --include engine --device 0
 ```
 Export yolov5 engine, either by cloning the official yolov5 repo and using the export function or via cd /.cache/torch/hub/yolov5_master and 
 exporting from there. Move the engine file into the root folder of ViTPose-Pytorch.
-Run TRT infer on video
 
-```
-python3 inference_yolov5.py --path=<path_to_vid> --trt
-```
 # With a webcam or another device
 ```
 ls /dev/vid*
