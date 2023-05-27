@@ -11,20 +11,13 @@ mkdir models
 mv <weight_path> ~/ViTPose-Pytorch/models/
 ```
 # Requirements
-Not sure if all of them are needed
+If nvidia-tensorrt is not found install nvidia-pyindex first.
+
 ```
 pip3 insltall -r requirements.txt
 ```
 # How to run
-```
-python3 inference_yolov5.py --path=<path_to_vid>
-```
 
-# TRT support
-TRT 7.x is preferred, since TRT 8.x does not produce good results in my case.
-```
-pip3 install nvidia-pyindex nvidia-tensorrt==7.2.3.4
-```
 Export ViTPose TRT model 
 ```
 python3 export.py --include engine --device 0
