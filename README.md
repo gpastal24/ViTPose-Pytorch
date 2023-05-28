@@ -42,7 +42,7 @@ Or
 pip install vitpose-infer
 ```
 # Usage example
-```
+```python
 from vitpose_infer import VitInference
 import cv2 
 
