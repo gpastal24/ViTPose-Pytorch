@@ -41,8 +41,16 @@ Or
 ```
 pip install vitpose-infer
 ```
+# Usage example
+```
+from vitpose_infer import VitInference
+import cv2 
 
+model = VitInference('models/vitpose-b-multi-coco.engine',\
+            yolo_path='./yolov5n.engine',tensorrt=True)
 
+pts,tids,bboxes,drawn_frame,orig_frame= model.inference(frame,frame_counter)
+```
 # Examples 
 
 ![](https://github.com/gpastal24/ViTPose-Pytorch/blob/main/examples/output_simple.gif)
