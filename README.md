@@ -36,6 +36,12 @@ python3 -m build
 ```
 Install the whl in the dist folder via pip.
 
+Or
+
+```
+pip install vitpose-infer
+```
+
 
 # Examples 
 
