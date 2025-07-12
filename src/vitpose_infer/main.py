@@ -53,12 +53,13 @@ logger.propagate=False
 
 class VitInference:
     # tracker = byte_tracker.BYTETracker(make_parser().parse_known_args()[0],frame_rate=30)
-    def __init__(self,pose_path,yolo_path,tensorrt=False):
+    def __init__(self,pose_path,yolo_path,tensorrt=False,wholebody=False):
         super(VitInference,self).__init__()
         self.tensorrt = tensorrt
         self.tracker = byte_tracker.BYTETracker(make_parser().parse_known_args()[0],frame_rate=30)
         self.pose_path = pose_path
         self.yolo_path = yolo_path
+        self.wholebody=wholebody
         print(self.pose_path)
         if self.tensorrt:
             assert self.yolo_path is not None
@@ -72,7 +73,10 @@ class VitInference:
         else:
             
             self.model = torch.hub.load('ultralytics/yolov5:v6.2', 'yolov5n', pretrained=True)
-            self.pose = build_model('ViTPose_base_coco_256x192',self.pose_path)
+            if self.wholebody:
+                self.pose = build_model('ViTPose_base_wholebody',self.pose_path)
+            else:
+                self.pose = build_model('ViTPose_base_coco_256x192',self.pose_path)
         self.pose.cuda().eval()
 
         frame_id = 0
@@ -97,10 +101,17 @@ class VitInference:
             )
             # self.timer.toc()
             if pts is not None:
+                print(pts.shape)
                 for i, (pt, pid) in enumerate(zip(pts, online_ids)):
-                    online_im=draw_points_and_skeleton(online_im, pt, joints_dict()['coco']['skeleton'], person_index=pid,
-                                                            points_color_palette='gist_rainbow', skeleton_color_palette='jet',points_palette_samples=10,confidence_threshold=0.3)
-
+                    if not self.wholebody:
+                        online_im=draw_points_and_skeleton(online_im, pt, joints_dict()['coco']['skeleton'], person_index=pid,
+                                                            points_color_palette='gist_rainbow', skeleton_color_palette='jet',
+                                                            points_palette_samples=10,confidence_threshold=0.3)
+                    else:
+                        online_im=draw_points_and_skeleton(online_im, pt, joints_dict()['coco-wholebody']['skeleton'], person_index=pid,
+                                                            points_color_palette=joints_dict()['coco-wholebody']['kpt_color'], 
+                                                            skeleton_color_palette='jet',#joints_dict()['coco-wholebody']['skeleton_color'],
+                                                            points_palette_samples=10,confidence_threshold=0.3)
         else:
 
             online_im = frame_orig

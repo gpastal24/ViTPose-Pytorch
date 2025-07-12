@@ -5,7 +5,13 @@ import torch
 import torchvision
 import ffmpeg
 
-
+palette = np.array([[255, 128, 0], [255, 153, 51], [255, 178, 102],
+                    [230, 230, 0], [255, 153, 255], [153, 204, 255],
+                    [255, 102, 255], [255, 51, 255], [102, 178, 255],
+                    [51, 153, 255], [255, 153, 153], [255, 102, 102],
+                    [255, 51, 51], [153, 255, 153], [102, 255, 102],
+                    [51, 255, 51], [0, 255, 0], [0, 0, 255],
+                    [255, 0, 0], [255, 255, 255]])
 def joints_dict():
     joints = {
         "coco": {
@@ -38,6 +44,39 @@ def joints_dict():
                 [0, 5], [0, 6]
             ]
         },
+        "coco-wholebody":
+        {
+            "keypoints":{},
+            "skeleton": [[15, 13], [13, 11], [16, 14], [14, 12], [11, 12],
+                        [5, 11], [6, 12], [5, 6], [5, 7], [6, 8], [7, 9],
+                        [8, 10], [1, 2], [0, 1], [0, 2],
+                        [1, 3], [2, 4], [3, 5], [4, 6], [15, 17], [15, 18],
+                        [15, 19], [16, 20], [16, 21], [16, 22], [91, 92],
+                        [92, 93], [93, 94], [94, 95], [91, 96], [96, 97],
+                        [97, 98], [98, 99], [91, 100], [100, 101], [101, 102],
+                        [102, 103], [91, 104], [104, 105], [105, 106],
+                        [106, 107], [91, 108], [108, 109], [109, 110],
+                        [110, 111], [112, 113], [113, 114], [114, 115],
+                        [115, 116], [112, 117], [117, 118], [118, 119],
+                        [119, 120], [112, 121], [121, 122], [122, 123],
+                        [123, 124], [112, 125], [125, 126], [126, 127],
+                        [127, 128], [112, 129], [129, 130], [130, 131],
+                        [131, 132]]
+            ,
+            "skeleton_color": palette[[
+                0, 0, 0, 0, 7, 7, 7, 9, 9, 9, 9, 9, 16, 16, 16, 16, 16, 16, 16
+            ] + [16, 16, 16, 16, 16, 16] + [
+                0, 0, 0, 0, 4, 4, 4, 4, 8, 8, 8, 8, 12, 12, 12, 12, 16, 16, 16,
+                16
+            ] + [
+                0, 0, 0, 0, 4, 4, 4, 4, 8, 8, 8, 8, 12, 12, 12, 12, 16, 16, 16,
+                16
+            ]],
+            "kpt_color" : palette[
+                [16, 16, 16, 16, 16, 9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0, 0] +
+                [0, 0, 0, 0, 0, 0] + [19] * (68 + 42)]
+        },
+
         "mpii": {
             "keypoints": {
                 0: "right_ankle",
@@ -88,21 +127,30 @@ def draw_points(image, points, color_palette='tab20', palette_samples=16, confid
         A new image with overlaid points
 
     """
-    try:
-        colors = np.round(
-            np.array(plt.get_cmap(color_palette).colors) * 255
-        ).astype(np.uint8)[:, ::-1].tolist()
-    except AttributeError:  # if palette has not pre-defined colors
-        colors = np.round(
-            np.array(plt.get_cmap(color_palette)(np.linspace(0, 1, palette_samples))) * 255
-        ).astype(np.uint8)[:, -2::-1].tolist()
-
+    if isinstance(color_palette,np.ndarray):
+        colors = color_palette
+    else:
+        try:
+            colors = np.round(
+                np.array(plt.get_cmap(color_palette).colors) * 255
+            ).astype(np.uint8)[:, ::-1].tolist()
+        except AttributeError:  # if palette has not pre-defined colors
+            colors = np.round(
+                np.array(plt.get_cmap(color_palette)(np.linspace(0, 1, palette_samples))) * 255
+            ).astype(np.uint8)[:, -2::-1].tolist()
     circle_size = max(1, min(image.shape[:2]) // 160)  # ToDo Shape it taking into account the size of the detection
     # circle_size = max(2, int(np.sqrt(np.max(np.max(points, axis=0) - np.min(points, axis=0)) // 16)))
-
-    for i, pt in enumerate(points):
-        if pt[2] > confidence_threshold:
-            image = cv2.circle(image, (int(pt[1]), int(pt[0])), circle_size, tuple(colors[i % len(colors)]), -1)
+    if isinstance(color_palette,np.ndarray):
+        # colors = color_palette
+        colors = colors.tolist()
+        for i, pt in enumerate(points):
+            # print(colors[i])
+            if pt[2] > confidence_threshold:
+                image = cv2.circle(image, (int(pt[1]), int(pt[0])), circle_size, colors[i], -1)
+    else:
+        for i, pt in enumerate(points):
+            if pt[2] > confidence_threshold:
+                image = cv2.circle(image, (int(pt[1]), int(pt[0])), circle_size, tuple(colors[i % len(colors)]), -1)
 
     return image
 
@@ -133,14 +181,18 @@ def draw_skeleton(image, points, skeleton, color_palette='Set2', palette_samples
         A new image with overlaid joints
 
     """
-    try:
-        colors = np.round(
-            np.array(plt.get_cmap(color_palette).colors) * 255
-        ).astype(np.uint8)[:, ::-1].tolist()
-    except AttributeError:  # if palette has not pre-defined colors
-        colors = np.round(
-            np.array(plt.get_cmap(color_palette)(np.linspace(0, 1, palette_samples))) * 255
-        ).astype(np.uint8)[:, -2::-1].tolist()
+    if isinstance(color_palette,np.ndarray):
+        colors = color_palette
+        
+    else:
+        try:
+            colors = np.round(
+                np.array(plt.get_cmap(color_palette).colors) * 255
+            ).astype(np.uint8)[:, ::-1].tolist()
+        except AttributeError:  # if palette has not pre-defined colors
+            colors = np.round(
+                np.array(plt.get_cmap(color_palette)(np.linspace(0, 1, palette_samples))) * 255
+            ).astype(np.uint8)[:, -2::-1].tolist()
 
     for i, joint in enumerate(skeleton):
         pt1, pt2 = points[joint]

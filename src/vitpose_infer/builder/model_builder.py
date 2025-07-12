@@ -18,7 +18,8 @@ def build_model(model_name,checkpoint=None):
         
         model = getattr(mod, "model")
         # from path import model
-    except:
+    except Exception as e:
+        print(e)
         raise ValueError('not a correct config')
 
         
